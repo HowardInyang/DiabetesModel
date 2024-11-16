@@ -11,7 +11,7 @@ def predict_diabetes(data):
     return prediction
 
 def main():
-    st.title("Diabetes Prediction Application test")
+    st.title("Diabetes Prediction Application")
 
     # Introduction
     st.write("Welcome to the Diabetes Prediction App. Please enter the patient data below to predict the presence of diabetes.")
