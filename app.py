@@ -11,48 +11,135 @@ def predict_diabetes(data):
     return prediction
 
 def main():
-    st.title("Diabetes Prediction Application")
+    # App title with style
+    st.markdown(
+        "<h1 style='text-align: center; color: #4CAF50;'>Diabetes Prediction Application</h1>",
+        unsafe_allow_html=True,
+    )
 
-    # Introduction
-    st.write("Welcome to the Diabetes Prediction App. Please enter the patient data below to predict the presence of diabetes.")
-    
-    # Set default values in an expander
-    with st.expander("Click here to view or edit default values"):
-        default_values = {
-            'Number of times pregnant': 0,
-            'Plasma glucose concentration': 148,
-            'Diastolic blood pressure': 72,
-            'Triceps skin fold thickness': 35,
-            '2-Hour serum insulin': 0,
-            'Body mass index': 33.6,
-            'Diabetes pedigree function': 0.627,
-            'Age': 50
-        }
+    # Introduction with subheader
+    st.subheader("Welcome!")
+    st.write(
+        "This application uses a trained machine learning model to predict the likelihood of diabetes based on patient data. "
+        "Please fill in the fields below, and click **Predict** to get your result."
+    )
+    st.write("---")
 
-    # Collect user input with columns
+    # Default values in an expander for guidance
+    with st.expander("Default Values Guide (Click to View)"):
+        st.info(
+            """
+            **Default Values:**\n
+            - **Number of times pregnant:** 0\n
+            - **Plasma glucose concentration:** 148\n
+            - **Diastolic blood pressure:** 72\n
+            - **Triceps skin fold thickness:** 35\n
+            - **2-Hour serum insulin:** 0\n
+            - **Body mass index:** 33.6\n
+            - **Diabetes pedigree function:** 0.627\n
+            - **Age:** 50
+            """
+        )
+
+    # Input fields with styling
+    st.markdown("<h3 style='color: #4CAF50;'>Patient Information</h3>", unsafe_allow_html=True)
     col1, col2 = st.columns(2)
+
     with col1:
-        preg = st.number_input("Number of times pregnant:", min_value=0, max_value=17, step=1, value=default_values['Number of times pregnant'])
-        glucose = st.number_input("Plasma glucose concentration:", min_value=0, max_value=200, step=1, value=default_values['Plasma glucose concentration'])
-        bp = st.number_input("Diastolic blood pressure:", min_value=0, max_value=122, step=1, value=default_values['Diastolic blood pressure'])
-        skin_thickness = st.number_input("Triceps skin fold thickness:", min_value=0, max_value=99, step=1, value=default_values['Triceps skin fold thickness'])
-    
+        preg = st.number_input(
+            "Number of times pregnant",
+            min_value=0,
+            max_value=17,
+            step=1,
+            value=0,
+            help="Number of pregnancies the patient has had.",
+        )
+        glucose = st.number_input(
+            "Plasma glucose concentration",
+            min_value=0,
+            max_value=200,
+            step=1,
+            value=148,
+            help="Plasma glucose concentration measured 2 hours after a meal.",
+        )
+        bp = st.number_input(
+            "Diastolic blood pressure (mm Hg)",
+            min_value=0,
+            max_value=122,
+            step=1,
+            value=72,
+            help="Blood pressure reading.",
+        )
+        skin_thickness = st.number_input(
+            "Triceps skin fold thickness (mm)",
+            min_value=0,
+            max_value=99,
+            step=1,
+            value=35,
+            help="Thickness of the skin on the triceps.",
+        )
+
     with col2:
-        insulin = st.number_input("2-Hour serum insulin:", min_value=0, max_value=846, step=1, value=default_values['2-Hour serum insulin'])
-        bmi = st.number_input("Body mass index:", min_value=0.0, max_value=67.1, step=0.1, value=default_values['Body mass index'])
-        dpf = st.number_input("Diabetes pedigree function:", min_value=0.078, max_value=2.42, step=0.001, value=default_values['Diabetes pedigree function'])
-        age = st.number_input("Age:", min_value=21, max_value=81, step=1, value=default_values['Age'])
+        insulin = st.number_input(
+            "2-Hour serum insulin (µU/ml)",
+            min_value=0,
+            max_value=846,
+            step=1,
+            value=0,
+            help="Insulin levels measured after 2 hours.",
+        )
+        bmi = st.number_input(
+            "Body Mass Index (BMI)",
+            min_value=0.0,
+            max_value=67.1,
+            step=0.1,
+            value=33.6,
+            help="Body Mass Index, calculated as weight in kg/(height in m)^2.",
+        )
+        dpf = st.number_input(
+            "Diabetes Pedigree Function",
+            min_value=0.078,
+            max_value=2.42,
+            step=0.001,
+            value=0.627,
+            help="A score indicating the genetic likelihood of diabetes.",
+        )
+        age = st.number_input(
+            "Age (years)",
+            min_value=21,
+            max_value=81,
+            step=1,
+            value=50,
+            help="Age of the patient.",
+        )
 
     # Prepare input data for prediction
     input_data = np.array([[preg, glucose, bp, skin_thickness, insulin, bmi, dpf, age]])
 
-    # Make prediction with a visually distinct button
+    # Call-to-action button
+    st.markdown("<h3 style='color: #4CAF50;'>Predict Diabetes</h3>", unsafe_allow_html=True)
     if st.button("Predict", help="Click to predict diabetes based on the input data"):
-        prediction = predict_diabetes(input_data)
+        with st.spinner("Predicting..."):
+            prediction = predict_diabetes(input_data)
         if prediction[0] == 1:
-            st.metric(label="Prediction", value="Positive", delta="Diabetes", delta_color="inverse")
+            st.success(
+                "The prediction is **Positive**: The patient is likely to have diabetes.",
+                icon="✅",
+            )
+            st.balloons()
         else:
-            st.metric(label="Prediction", value="Negative", delta="No Diabetes")
+            st.info(
+                "The prediction is **Negative**: The patient is unlikely to have diabetes.",
+                icon="❎",
+            )
+
+    # Footer
+    st.markdown(
+        "<footer style='text-align: center; margin-top: 20px; color: gray;'>"
+        "Developed with ❤️ using Streamlit."
+        "</footer>",
+        unsafe_allow_html=True,
+    )
 
 if __name__ == "__main__":
     main()
